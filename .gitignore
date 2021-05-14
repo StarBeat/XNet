@@ -20,6 +20,18 @@
 *.mod
 *.smod
 
+#dir
+.history
+.xmake
+.vs
+vsxmake2019
+vsxmake2017
+build
+
+#ide file
+makefile
+Makefile
+
 # Compiled Static libraries
 *.lai
 *.la
