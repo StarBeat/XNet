@@ -19,6 +19,7 @@ target("xnet")
     add_headerfiles("include/*.inl")
 
     add_files("src/*.cpp")
+target_end()
 
 target("xnet_test")
     set_languages("c11", "c++20")
@@ -53,3 +54,4 @@ target("xnet_test")
             add_cxflags("/Oy")
         end
     end
+target_end()
