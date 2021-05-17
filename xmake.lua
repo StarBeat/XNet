@@ -1,12 +1,36 @@
-compress_mode={}
-compress_mode.None = ""
-compress_mode.Lz4 = "lz4"
-compress_mode.Zlib = "zlib"
+---
+compress_mode={
+    None = "",
+    Lz4 = "lz4",
+    Zlib = "zlib"
+}
+
+dep_module={
+    xtemplate = true
+}
+---
 
 target("xnet")
     set_languages("c11", "c++20")
     add_rules("mode.debug", "mode.release")
     set_kind("shared")
+
+    --- process common include
+    s = get_config("global_include")
+    if s and type(s) == "string" then
+        common_includes = s:deserialize()
+        for key, value in pairs(common_includes) do
+            if dep_module[key] ~= nil then
+                add_includedirs(value)
+            end
+        end
+    elseif not os.isdir("../XTemplate") then
+        --git.clone("https://github.com/StarBeat/XTemplate.git", {depth = 1, branch = "main", outputdir = "../"})
+        print("缺少依赖项")
+    elseif os.isdir("../XTemplate") then
+        add_includedirs("../XTemplate/include")
+    end
+    ---
 
     if get_config("compress") == compress_mode.Lz4 then
         add_requires("lz4")
