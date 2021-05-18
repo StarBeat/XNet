@@ -6,7 +6,8 @@ compress_mode={
 }
 
 dep_module={
-    xtemplate = true
+    xtemplate = true,
+    xalgorithm = true
 }
 ---
 
