@@ -16,11 +16,11 @@ namespace x::xnet
 template<typename T>
 concept IXnetLLImpl = requires()
 {
-    std::is_same_v<void(std::string, int), Delta::FuncTraits_Signature<decltype(T::Init)>>;
-    std::is_same_v<void(const uint8_t*, int), Delta::FuncTraits_Signature<decltype(T::Send)>>;
-    std::is_same_v<int(char*), Delta::FuncTraits_Signature<decltype(T::Recv)>>;
+    std::is_same_v<void(std::string, int), delta::FuncTraits_Signature<decltype(T::Init)>>;
+    std::is_same_v<void(const uint8_t*, int), delta::FuncTraits_Signature<decltype(T::Send)>>;
+    std::is_same_v<int(char*), delta::FuncTraits_Signature<decltype(T::Recv)>>;
 };
-namespace default
+namespace defaultimpl
 {
 struct DefaultXnetLLImpl;
 template<IXnetLLImpl T = DefaultXnetLLImpl>
@@ -55,7 +55,7 @@ struct XConnection
 };
 
 template<IXnetLLImpl T>
-struct XContext : default::XContext<T>
+struct XContext : defaultimpl::XContext<T>
 {
  private:
     T Impl;
