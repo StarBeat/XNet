@@ -4,7 +4,7 @@
 
 #pragma once
 #include <string>
-namespace x::xnet::default
+namespace x::xnet::defaultimpl
 {
 struct DefaultXnetLLImpl
 {

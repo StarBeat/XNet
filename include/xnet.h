@@ -27,7 +27,7 @@ template<IXnetLLImpl T = DefaultXnetLLImpl>
 struct XContext
 {
 };
-}  // namespace default
+}  // namespace defaultimpl
 
 #pragma region typedef
 
