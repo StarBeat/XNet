@@ -50,7 +50,7 @@ using XOutMessage = XNetMessage;
 using XInMessage = XNetMessage;
 #pragma endregion
 
-struct XConnection 
+struct XConnection
 {
 };
 
