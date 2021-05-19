@@ -1,78 +1,80 @@
+/*
+#Copyright 2021 xyang.
+*/
+
 #pragma once
 
 #include <type_traits>
 #include <functional>
 #include <string>
 #include "function.hpp"
+#include "util.hpp"
+#include "queue.hpp"
 
-namespace X::Xnet
+namespace x::xnet
 {
-    namespace X::Xnet::Default
-    {
-        struct DefaultXnetLLImpl;
-    }
-    template<typename T>
-    concept IXnetLLImpl = requires()
-    {
-        std::is_same_v<void(std::string, int), Delta::FuncTraits_Signature<decltype(T::Init)>>;
-        std::is_same_v<void(const uint8_t*, int), Delta::FuncTraits_Signature<decltype(T::Send)>>;
-        std::is_same_v<int(char*), Delta::FuncTraits_Signature<decltype(T::Recv)>>;
+template<typename T>
+concept IXnetLLImpl = requires()
+{
+    std::is_same_v<void(std::string, int), Delta::FuncTraits_Signature<decltype(T::Init)>>;
+    std::is_same_v<void(const uint8_t*, int), Delta::FuncTraits_Signature<decltype(T::Send)>>;
+    std::is_same_v<int(char*), Delta::FuncTraits_Signature<decltype(T::Recv)>>;
+};
+namespace default
+{
+struct DefaultXnetLLImpl;
+template<IXnetLLImpl T = DefaultXnetLLImpl>
+struct XContext
+{
+};
+}  // namespace default
 
-    };
+#pragma region typedef
 
-#pragma region 
+enum class XnetError : char
+{
+    EnumNone = 1,
+    EnumHostClose,
+    EnumRecvFailed,
+    EnumSendFailed,
+};
 
-    enum class XnetError : char
-    {
-        None = 1,
-        HostClose,
-        RecvFailed,
-        SendFailed,
-    };
+struct XNetMessage
+{
+    uint16_t size;
+    uint8_t* data;
+    int32_t id;
+};
 
-    struct XNetMessage
-    {
-        uint16_t size;
-        uint8_t* data;
-        int32_t id;
-    };
-
-    using XOutMessage = XNetMessage;
-    using XInMessage = XNetMessage;
-
-    struct XConnection
-    {
-
-    };
+using XOutMessage = XNetMessage;
+using XInMessage = XNetMessage;
 #pragma endregion
 
-    struct XContext
+struct XConnection
+{
+};
+
+template<IXnetLLImpl T>
+struct XContext : default::XContext<T>
+{
+ private:
+    T Impl;
+};
+
+class Xnet
+{
+ public:
+    Xnet()
     {
-    private:
-
-        IXnetLLImpl Impl;
-    };
-
-    class Xnet
+    }
+    ~Xnet()
     {
-    public:
-        Xnet()
-        {
-
-        }
-
-        ~Xnet()
-        {
-
-        }
-
-        void Update()
-        {
-
-        }
-    private:
-
-    };
-}
+    }
+    void Update()
+    {
+    }
+ private:
+};
+}  // namespace x::xnet
 #include "xnet.inl"
 

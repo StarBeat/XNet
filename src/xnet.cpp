@@ -1,5 +1,10 @@
+/*
+#Copyright 2021 xyang.
+*/
+
 #include "xnet.h"
 
-namespace X::Xnet {
+namespace x::xnet
+{
 
-}
+}  // namespace x::xnet
