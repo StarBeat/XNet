@@ -54,8 +54,6 @@ target("xnet_test")
     add_deps("xnet")
 
     add_includedirs("include/")
-    add_headerfiles("include/*.h")
-    add_headerfiles("include/*.inl")
     add_files("test/*.cpp")
 
     if is_mode("debug") then
