@@ -61,7 +61,7 @@ struct XContext : defaultimpl::XContext<T>
     T Impl;
 };
 
-class Xnet
+class DLL_EXPORT Xnet
 {
  public:
     Xnet()

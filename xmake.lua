@@ -44,6 +44,34 @@ target("xnet")
     add_headerfiles("include/*.inl")
 
     add_files("src/*.cpp")
+    if is_mode("debug") then
+        -- 添加DEBUG编译宏
+        add_defines("DEBUG")
+        -- 启用调试符号
+        set_symbols("debug")
+        -- 禁用优化
+        set_optimize("none")
+        if is_plat("linux") then
+            add_defines("DLL_EXPORT=__attribute__((visibility(\"default\")))")
+        elseif is_plat("windows") then
+            add_defines("DLL_EXPORT=__declspec(dllexport)")
+        end
+    elseif is_mode("release") then
+        -- 隐藏符号
+        set_symbols("hidden")
+        -- strip所有符号
+        set_strip("all")
+        -- 开启优化为：最快速度模式
+        set_optimize("fastest")
+        -- 忽略帧指针
+        if is_plat("linux") then
+            add_defines("DLL_EXPORT=__attribute__((visibility(\"default\")))")
+            add_cxflags("-fomit-frame-pointer")
+        elseif is_plat("windows") then
+            add_defines("DLL_EXPORT=__declspec(dllexport)")
+            add_cxflags("/Oy")
+        end
+    end 
 target_end()
 
 target("xnet_test")
