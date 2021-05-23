@@ -22,9 +22,10 @@ concept IXnetLLImpl = requires()
     std::is_same_v<int(char*), delta::FuncTraits_Signature<decltype(&T::Recv)>>;
 };
 template<template<typename>class IQueue>
-concept IQueueImpl = requires()
+concept IQueueImpl = requires(IQueue<int> queue)
 {
-    std::is_same_v<int&, decltype(static_cast<IQueue<int>>(0).pop)>;
+    std::is_same_v <void, decltype(queue.push(static_cast<const int&>(0)))>;
+    std::is_same_v<int&, decltype(queue.pop())>;
 };
 
 namespace defaultimpl
@@ -63,7 +64,7 @@ struct Xconnection
 {
 };
 
-template<IXnetLLImpl LLNet, template<typename>class Queue>
+template<IXnetLLImpl LLNet, template<typename>class Queue> requires IQueueImpl<Queue>
 struct Xcontext
 {
     Xcontext(){}
@@ -90,7 +91,7 @@ class DLL_EXPORT Xnet
         return true;
     }
  private:
-     // Xcontext<defaultimpl::DefaultXnetLLImpl, x::xalgorithm::lockfree::CircularCasQueue> context;
+     Xcontext<defaultimpl::DefaultXnetLLImpl, x::xalgorithm::lockfree::CircularCasQueue> context;
 };
 }  // namespace x::xnet
 #include "xnet.inl"
