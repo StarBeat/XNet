@@ -1,4 +1,4 @@
-/*
+﻿/*
 #Copyright 2021 xyang.
 */
 
@@ -24,7 +24,7 @@ concept IXnetLLImpl = requires()
 template<template<typename>class IQueue>
 concept IQueueImpl = requires(IQueue<int> queue)
 {
-    std::is_same_v <void, decltype(queue.push(static_cast<const int&>(0)))>;
+    queue.push(static_cast<const int&>(0));  // TODO:xyang const&版本 NOLINT
     std::is_same_v<int&, decltype(queue.pop())>;
 };
 
