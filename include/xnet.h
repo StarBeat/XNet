@@ -6,6 +6,7 @@
 
 #include <type_traits>
 #include <functional>
+#include <queue>
 #include <string>
 #include "function.hpp"
 #include "util.hpp"
@@ -16,17 +17,25 @@ namespace x::xnet
 template<typename T>
 concept IXnetLLImpl = requires()
 {
-    std::is_same_v<void(std::string, int), delta::FuncTraits_Signature<decltype(T::Init)>>;
-    std::is_same_v<void(const uint8_t*, int), delta::FuncTraits_Signature<decltype(T::Send)>>;
-    std::is_same_v<int(char*), delta::FuncTraits_Signature<decltype(T::Recv)>>;
+    std::is_same_v<void(std::string, int), delta::FuncTraits_Signature<decltype(&T::Init)>>;
+    std::is_same_v<void(const uint8_t*, int), delta::FuncTraits_Signature<decltype(&T::Send)>>;
+    std::is_same_v<int(char*), delta::FuncTraits_Signature<decltype(&T::Recv)>>;
 };
+template<template<typename>class IQueue>
+concept IQueueImpl = requires()
+{
+    std::is_same_v<int&, decltype(static_cast<IQueue<int>>(0).pop)>;
+};
+
 namespace defaultimpl
 {
-struct DefaultXnetLLImpl;
-template<IXnetLLImpl T = DefaultXnetLLImpl>
-struct XContext
+struct DefaultXnetLLImpl
 {
+    void Init(std::string ip, int port);
+    void Send(const uint8_t*, int);
+    int Recv(char*);
 };
+
 }  // namespace defaultimpl
 
 #pragma region typedef
@@ -50,15 +59,18 @@ using XOutMessage = XNetMessage;
 using XInMessage = XNetMessage;
 #pragma endregion
 
-struct XConnection
+struct Xconnection
 {
 };
 
-template<IXnetLLImpl T>
-struct XContext : defaultimpl::XContext<T>
+template<IXnetLLImpl LLNet, template<typename>class Queue>
+struct Xcontext
 {
+    Xcontext(){}
  private:
-    T Impl;
+    LLNet net_impl;
+    Queue<XInMessage> inqueue_impl;
+    Queue<XOutMessage> outqueue_impl;
 };
 
 class DLL_EXPORT Xnet
@@ -73,7 +85,12 @@ class DLL_EXPORT Xnet
     void Update()
     {
     }
+    bool HasNewMessage()
+    {
+        return true;
+    }
  private:
+     // Xcontext<defaultimpl::DefaultXnetLLImpl, x::xalgorithm::lockfree::CircularCasQueue> context;
 };
 }  // namespace x::xnet
 #include "xnet.inl"
