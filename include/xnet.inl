@@ -4,7 +4,7 @@
 
 #pragma once
 #include <string>
-namespace x::xnet::defaultimpl
+namespace x::xnet::impl
 {
 
     void DefaultXnetLLImpl::Init(std::string ip, int port) {}
