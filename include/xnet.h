@@ -29,19 +29,6 @@ concept IQueueImpl = requires(IQueue<int> queue)
     std::is_same_v<int&, decltype(queue.pop())>;
 };
 
-namespace impl
-{
-struct DefaultXnetLLImpl
-{
-    void Init(std::string ip, int port);
-    void Send(const uint8_t*, int);
-    int Recv(char*);
-};
-
-struct XcontextSingleThreadImpl
-{
-};
-}  // namespace impl
 
 #pragma region typedef
 
@@ -64,14 +51,32 @@ using XOutMessage = XNetMessage;
 using XInMessage = XNetMessage;
 #pragma endregion
 
+namespace impl
+{
+struct DefaultXnetLLImpl
+{
+    void Init(std::string ip, int port);
+    void Send(const uint8_t*, int);
+    int Recv(char*);
+};
+
+template<template<typename>class Queue> requires IQueueImpl<Queue>
+struct XcontextSingleThreadImpl
+{
+    Queue<XInMessage> inqueue_impl;
+    Queue<XOutMessage> outqueue_impl;
+};
+}  // namespace impl
+
 struct Xconnection
 {
 };
 
-template<IXnetLLImpl LLNet, template<typename>class Queue> requires IQueueImpl<Queue>
+template<IXnetLLImpl LLNet>
 struct Xcontext
 {
-    using XcontextImpl = typename std::enable_if<std::is_same_v<LLNet, impl::DefaultXnetLLImpl>, typename impl::XcontextSingleThreadImpl>::type;
+    using XcontextImpl = typename std::conditional_t<std::is_same_v<LLNet, impl::DefaultXnetLLImpl>, typename impl::XcontextSingleThreadImpl<std::queue>,
+        typename impl::XcontextSingleThreadImpl<x::xalgorithm::lockfree::CircularCasQueue>>;
 
     Xcontext(){}
 
@@ -84,10 +89,8 @@ struct Xcontext
         return *reinterpret_cast<XInMessage*>(nullptr);
     }
  private:
-    XcontextImpl xcontext;
+    XcontextImpl xcontext_impl;
     LLNet net_impl;
-    Queue<XInMessage> inqueue_impl;
-    Queue<XOutMessage> outqueue_impl;
 };
 
 class DLL_EXPORT Xnet
@@ -115,7 +118,7 @@ class DLL_EXPORT Xnet
         return true;
     }
  private:
-     Xcontext<impl::DefaultXnetLLImpl, x::xalgorithm::lockfree::CircularCasQueue> context;
+     Xcontext<impl::DefaultXnetLLImpl> context;
 };
 }  // namespace x::xnet
 #include "xnet.inl"
