@@ -63,8 +63,8 @@ struct DefaultXnetLLImpl
 template<template<typename>class Queue> requires IQueueImpl<Queue>
 struct XcontextSingleThreadImpl
 {
-    Queue<XInMessage> inqueue_impl;
-    Queue<XOutMessage> outqueue_impl;
+    Queue<XInMessage> _inqueue_impl;
+    Queue<XOutMessage> _outqueue_impl;
 };
 }  // namespace impl
 
@@ -89,8 +89,8 @@ struct Xcontext
         return *reinterpret_cast<XInMessage*>(nullptr);
     }
  private:
-    XcontextImpl xcontext_impl;
-    LLNet net_impl;
+    XcontextImpl _xcontext_impl;
+    LLNet _net_impl;
 };
 
 class DLL_EXPORT Xnet
@@ -105,12 +105,12 @@ class DLL_EXPORT Xnet
 
     void Send(const XOutMessage& msg)
     {
-        context.Send(msg);
+        _context.Send(msg);
     }
 
     XInMessage Recv()
     {
-        return context.Recv();
+        return _context.Recv();
     }
 
     bool HasNewMessage()
@@ -118,7 +118,7 @@ class DLL_EXPORT Xnet
         return true;
     }
  private:
-     Xcontext<impl::DefaultXnetLLImpl> context;
+     Xcontext<impl::DefaultXnetLLImpl> _context;
 };
 }  // namespace x::xnet
 #include "xnet.inl"

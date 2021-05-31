@@ -41,6 +41,7 @@ target("xnet")
 
     add_includedirs("include/")
     add_headerfiles("include/*.h")
+    add_headerfiles("include/*.hpp")
     add_headerfiles("include/*.inl")
 
     add_files("src/*.cpp")
